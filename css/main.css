@@ -70,6 +70,7 @@ body {
   display: flex;
   justify-content: center;
   min-height: calc(100vh - 60px);
+  /* To take this height of the nav into consideration - the above*/
 }
 
 .banner {
