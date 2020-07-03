@@ -85,8 +85,15 @@ class UI {
           amount: 1
         };
         console.log(cartItem);
-        // add product to the cart save cart in localstorage set cart values display
-        // cart item show the cart
+
+        // add product to the cart
+        cart = [
+          ...cart,
+          cartItem
+        ];
+        console.log(cart, 'carty');
+
+        // save cart in localstorage set cart values display cart item show the cart
       });
 
     });
