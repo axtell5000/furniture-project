@@ -82,9 +82,8 @@ class UI {
         // get product from products
         let cartItem = {
           ...Storage.getProduct(id),
-          amount: 1
+          amount: 1 // when spreading can add another property
         };
-        console.log(cartItem);
 
         // add product to the cart
         cart = [
@@ -93,7 +92,10 @@ class UI {
         ];
         console.log(cart, 'carty');
 
-        // save cart in localstorage set cart values display cart item show the cart
+        // save cart in localstorage
+        Storage.saveCart(cart);
+
+        // set cart values display cart item show the cart
       });
 
     });
@@ -109,6 +111,10 @@ class Storage {
   static getProduct(id) {
     let products = JSON.parse(localStorage.getItem('products'));
     return products.find(product => product.id === id)
+  }
+
+  static saveCart(cart) {
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
 }
 
