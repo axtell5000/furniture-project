@@ -13,6 +13,9 @@ const productsDOM = document.querySelector(".products-center");
 // cart
 let cart = [];
 
+// buttons
+let buttonsDOM = [];
+
 // getting products
 class Products {
   async getProducts() {
@@ -21,10 +24,10 @@ class Products {
       let data = await result.json();
       let products = data.items;
       products = products.map((item) => {
-        const { title, price } = item.fields;
-        const { id } = item.sys;
+        const {title, price} = item.fields;
+        const {id} = item.sys;
         const image = item.fields.image.fields.file.url;
-        return { title, price, id, image };
+        return {title, price, id, image};
       });
       return products;
     } catch (error) {
@@ -60,12 +63,45 @@ class UI {
     });
     productsDOM.innerHTML = result;
   }
+
+  getBagBtns() {
+    const buttons = [...document.querySelectorAll(".bag-btn")]; // spreading all the buttons selected into an array
+    buttonsDOM = buttons;
+    buttons.forEach((button) => {
+      let id = button.dataset.id; // dataset targets the data attr on html element this case data-id
+      let inCart = cart.find((item) => item.id === id);
+
+      if (inCart) {
+        button.innerText = "In Cart";
+        button.disabled = true;
+      }
+      button.addEventListener('click', (event) => {
+        event.target.innerText = 'In Cart';
+        event.target.disabled = true;
+
+        // get product from products
+        let cartItem = {
+          ...Storage.getProduct(id),
+          amount: 1
+        };
+        console.log(cartItem);
+        // add product to the cart save cart in localstorage set cart values display
+        // cart item show the cart
+      });
+
+    });
+  }
 }
 
 // Working with local storage
 class Storage {
   static saveProducts(products) {
     localStorage.setItem("products", JSON.stringify(products));
+  }
+
+  static getProduct(id) {
+    let products = JSON.parse(localStorage.getItem('products'));
+    return products.find(product => product.id === id)
   }
 }
 
@@ -74,8 +110,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const products = new Products();
 
   // get all products
-  products.getProducts().then((products) => {
-    ui.displayProducts(products);
-    Storage.saveProducts(products); // can do it like this because its a static method
-  });
+  products
+    .getProducts()
+    .then((products) => {
+      ui.displayProducts(products);
+      Storage.saveProducts(products); // can do it like this because its a static method
+    })
+    .then(() => {
+      ui.getBagBtns();
+    });
 });
