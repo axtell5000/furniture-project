@@ -159,7 +159,41 @@ class UI {
   }
 
   cartLogic() {
+    // clear cart button
     clearCartBtn.addEventListener("click", () => this.clearCart());
+
+    // cart functionality increase / decrease values, we are going to make using of event bubbling to make this work
+    cartContent.addEventListener("click", (event) => {
+      if (event.target.classList.contains("remove-item")) {
+        let removeItem = event.target;
+        let id = removeItem.dataset.id;
+        // remove item from the DOM
+        cartContent.removeChild(removeItem.parentElement.parentElement);
+        this.removeItem(id);
+      } else if (event.target.classList.contains("fa-chevron-up")) {
+        let addAmount = event.target;
+        let id = addAmount.dataset.id;
+        let tempItem = cart.find((item) => item.id === id);
+        tempItem.amount = tempItem.amount + 1;
+        Storage.saveCart(cart); // updating localstorage
+        this.setCartValues(cart); // changing cart values
+        addAmount.nextElementSibling.innerText = tempItem.amount;
+      } else if (event.target.classList.contains("fa-chevron-down")) {
+        let lowerAmount = event.target;
+        let id = lowerAmount.dataset.id;
+        let tempItem = cart.find((item) => item.id === id);
+        tempItem.amount = tempItem.amount - 1;
+
+        if (tempItem.amount > 0) {
+          Storage.saveCart(cart); // updating localstorage
+          this.setCartValues(cart); // changing cart values
+          lowerAmount.previousElementSibling.innerText = tempItem.amount;
+        } else {
+          cartContent.removeChild(lowerAmount.parentElement.parentElement);
+          this.removeItem(id);
+        }
+      }
+    });
   }
 
   clearCart() {
